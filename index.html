@@ -14,21 +14,73 @@
       font-family: "Daydream", sans-serif;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 </head>
 <body>
   <div class="center">
-    <label for="inputImage" id="fileLabel"><3</label>
-    <input type="file" id="inputImage" accept="image/*" style="display:none;">
+    <input type="file" id="image-upload" accept="image/*" />
   </div>
   <canvas id="canvas" width="224" height="224" style="display:none;"></canvas>
   <p id="prediction"></p>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-  <script src="main.js"></script>
   <script>
-    document.querySelector("#fileLabel").addEventListener("click", function(event) {
-      event.preventDefault(); // prevent default behavior of label element
-      document.querySelector("#inputImage").click(); // trigger click event on file input element
+    document.getElementById("image-upload").addEventListener("change", async (event) => {
+      const model = await loadModel();
+      const image = await loadImage(event.target.files[0]);
+      const prediction = predictImage(model, image);
+      displayPrediction(prediction);
     });
+
+    const class_names = [
+      "BACKGROUND_Google", "Faces", "Faces_easy", "Leopards",
+      "Motorbikes", "accordion", "airplanes", "anchor", "ant",
+      "barrel", "bass", "beaver", "binocular", "bonsai", "brain",
+      "brontosaurus", "buddha", "butterfly", "camera", "cannon",
+      "car_side", "ceiling_fan", "cellphone", "chair", "chandelier",
+      "cougar_body", "cougar_face", "crab", "crayfish", "crocodile",
+      "crocodile_head", "cup", "dalmatian", "dollar_bill", "dolphin",
+      "dragonfly", "electric_guitar", "elephant", "emu", "euphonium",
+      "ewer", "ferry", "flamingo", "flamingo_head", "garfield", "gerenuk",
+      "gramophone", "grand_piano", "hawksbill", "headphone", "hedgehog",
+      "helicopter", "ibis", "inline_skate", "joshua_tree", "kangaroo",
+      "ketch", "lamp", "laptop", "llama", "lobster", "lotus", "mandolin",
+      "mayfly", "menorah", "metronome", "minaret", "nautilus", "octopus",
+      "okapi", "pagoda", "panda", "pigeon", "pizza", "platypus", "pyramid",
+      "revolver", "rhino", "rooster", "saxophone", "schooner", "scissors",
+      "scorpion", "sea_horse", "snoopy", "soccer_ball", "stapler", "starfish",
+      "stegosaurus", "stop_sign", "strawberry", "sunflower", "tick", "trilobite",
+      "umbrella", "watch", "water_lilly", "wheelchair", "wild_cat", "windsor_chair",
+      "wrench", "yin_yang"
+    ];
+
+    async function loadModel() {
+      const model = await tf.loadLayersModel("/output_directory/model.json");
+      return model;
+    }
+
+    async function loadImage(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.width = 224; // set the width and height according to your model's input size
+          img.height = 224;
+          img.onload = () => resolve(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function predictImage(model, image) {
+      const inputTensor = tf.browser.fromPixels(image).toFloat().expandDims();
+      const prediction = model.predict(inputTensor).argMax(-1).dataSync()[0];
+      return prediction;
+    }
+
+    function displayPrediction(prediction) {
+      const predictionElement = document.getElementById("prediction");
+      predictionElement.textContent = `Predicted class: ${class_names[prediction]}`;
+    }
   </script>
 </body>
 </html>
