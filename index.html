@@ -11,12 +11,10 @@
     <label for="inputImage" id="fileLabel">Choose an Image</label>
     <input type="file" id="inputImage" accept="image/*" style="display:none;">
   </div>
+  <canvas id="drawingCanvas" width="224" height="224"></canvas>
+  <button id="predictDrawing">Predict Drawing</button>
   <canvas id="canvas" width="224" height="224" style="display:none;"></canvas>
   <p id="prediction"></p>
-
-  <h2>Drawing Area</h2>
-  <canvas id="drawingCanvas" width="400" height="400" style="border:1px solid #000000;"></canvas>
-
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="main.js"></script>
   <script src="drawing.js"></script>
