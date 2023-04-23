@@ -3,21 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CNN Image Classification by Wu Jia Xu</title>
+  <title>CNN Image Classification</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    @font-face {
-      font-family: "Daydream";
-      src: url("fonts/Daydream.ttf");
-    }
-    body {
-      font-family: "Daydream", sans-serif;
-    }
-  </style>
 </head>
 <body>
   <div class="center">
-    <label for="inputImage" id="fileLabel"><3</label>
+    <label for="inputImage" id="fileLabel">Choose an Image</label>
     <input type="file" id="inputImage" accept="image/*" style="display:none;">
   </div>
   <canvas id="canvas" width="224" height="224" style="display:none;"></canvas>
@@ -28,6 +19,17 @@
     document.querySelector("#fileLabel").addEventListener("click", function(event) {
       event.preventDefault(); // prevent default behavior of label element
       document.querySelector("#inputImage").click(); // trigger click event on file input element
+    });
+
+    document.querySelector("#inputImage").addEventListener("change", async function(event) {
+      const imageElement = document.createElement("img");
+      imageElement.src = URL.createObjectURL(event.target.files[0]);
+      imageElement.onload = async function() {
+        const image = await tf.browser.fromPixels(imageElement);
+        const classIndex = await predict(model, image);
+        const className = class_names[classIndex];
+        document.getElementById('prediction').innerText = className;
+      }
     });
   </script>
 </body>
