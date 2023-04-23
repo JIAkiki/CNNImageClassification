@@ -72,7 +72,7 @@ async function main() {
 
   const predictDrawingButton = document.getElementById('predictDrawing');
   predictDrawingButton.addEventListener('click', async () => {
-    const tensorImage = await tf.browser.fromPixels(drawingCanvas);
+    const tensorImage = await tf.browser.fromPixels(canvas);
     const classIndex = await predict(model, tensorImage);
     const className = class_names[classIndex];
     document.getElementById('prediction').innerText = className;
