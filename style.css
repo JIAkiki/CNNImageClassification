@@ -84,7 +84,3 @@ canvas {
   text-shadow: 1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000;
 }
 
-/* Style for white outline */
-h1, *:not(#uploadText) {
-  text-shadow: 1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
-}
