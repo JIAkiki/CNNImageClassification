@@ -21,3 +21,17 @@ canvas {
   text-align: center;
   margin: 0 auto;
 }
+
+body, html {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.center {
+  text-align: center;
+}
