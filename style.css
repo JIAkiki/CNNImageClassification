@@ -7,6 +7,7 @@
 /* Set font for entire page */
 body {
   font-family: "Daydream", sans-serif;
+  text-shadow: 1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
   height: 100%;
   margin: 0;
   padding: 0;
