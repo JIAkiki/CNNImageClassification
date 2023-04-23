@@ -46,6 +46,11 @@ async function loadImage(src) {
   });
 }
 
+function speak(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(utterance);
+}
+
 async function main() {
   const model = await loadModel();
   const inputImage = document.getElementById('inputImage');
@@ -62,6 +67,9 @@ async function main() {
     const classIndex = await predict(model, tensorImage);
     const className = class_names[classIndex];
     document.getElementById('prediction').innerText = className;
+
+    // Add text-to-speech for the predicted class name
+    speak(className);
   });
 }
 
