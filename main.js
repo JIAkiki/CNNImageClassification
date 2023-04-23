@@ -16,42 +16,36 @@ const class_names = ["BACKGROUND_Google", "Faces", "Faces_easy", "Leopards",
       "scorpion", "sea_horse", "snoopy", "soccer_ball", "stapler", "starfish",
       "stegosaurus", "stop_sign", "strawberry", "sunflower", "tick", "trilobite",
       "umbrella", "watch", "water_lilly", "wheelchair", "wild_cat", "windsor_chair",
-      "wrench", "yin_yang"] // Replace with the actual class names list.
+      "wrench", "yin_yang"]
 
 async function loadModel() {
-  const model = await tf.loadLayersModel('output_directory/model.json');
+  const model = await tf.loadLayersModel('path/to/your/model.json');
   return model;
 }
 
 function preprocessImage(image) {
-  // Resize the image to match the input size of the model
   const resizedImage = tf.image.resizeBilinear(image, [224, 224]);
-
-  // Rescale the image to match the range used during training (0-1)
   const rescaledImage = resizedImage.div(tf.scalar(255.0));
-
-  // Add an extra dimension to match the expected input shape [1, 224, 224, 3]
   const batchedImage = rescaledImage.expandDims(0);
-
   return batchedImage;
 }
 
-function displayPrediction(prediction) {
-  const predictionElement = document.getElementById("prediction");
-  predictionElement.textContent = `Predicted class: ${class_names[prediction]}`;
+async function predict(model, image) {
+  const preprocessedImage = preprocessImage(image);
+  const prediction = model.predict(preprocessedImage);
+  const classIndex = prediction.argMax(-1).dataSync()[0];
+  return classIndex;
 }
 
-document.getElementById("inputImage").addEventListener("change", async function (event) {
+async function main() {
   const model = await loadModel();
-  const image = new Image();
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
+  const inputImage = document.getElementById('inputImage');
+  inputImage.addEventListener('change', async () => {
+    const image = await tf.browser.fromPixels(inputImage);
+    const classIndex = await predict(model, image);
+    const className = class_names[classIndex];
+    document.getElementById('prediction').innerText = className;
+  });
+}
 
-  image.src = URL.createObjectURL(event.target.files[0]);
-  image.onload = async function () {
-    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-    const preprocessedImage = preprocessImage(image);
-    const prediction = model.predict(preprocessedImage).argMax(-1).dataSync()[0];
-    displayPrediction(prediction);
-  };
-});
+main();
