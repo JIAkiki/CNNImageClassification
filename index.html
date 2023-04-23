@@ -26,11 +26,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="main.js"></script>
   <script>
-    const fileLabel = document.getElementById('fileLabel');
-    const inputFile = document.getElementById('inputImage');
-
-    fileLabel.addEventListener('click', function() {
-      inputFile.click();
+    document.querySelector("#fileLabel").addEventListener("click", function(event) {
+      event.preventDefault(); // prevent default behavior of label element
+      document.querySelector("#inputImage").click(); // trigger click event on file input element
     });
   </script>
 </body>
