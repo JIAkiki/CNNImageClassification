@@ -19,7 +19,7 @@ const class_names = ["BACKGROUND_Google", "Faces", "Faces_easy", "Leopards",
       "wrench", "yin_yang"]
 
 async function loadModel() {
-  const model = await tf.loadLayersModel('path/to/your/model.json');
+  const model = await tf.loadLayersModel('output_directory/model.json');
   return model;
 }
 
