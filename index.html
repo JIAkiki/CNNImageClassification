@@ -25,5 +25,13 @@
   <p id="prediction"></p>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="main.js"></script>
+  <script>
+    const fileLabel = document.getElementById('fileLabel');
+    const inputFile = document.getElementById('inputImage');
+
+    fileLabel.addEventListener('click', function() {
+      inputFile.click();
+    });
+  </script>
 </body>
 </html>
