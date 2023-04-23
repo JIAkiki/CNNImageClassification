@@ -1,39 +1,52 @@
-const inputImage = document.getElementById("inputImage");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-const predictionElement = document.getElementById("prediction");
+const class_names = ["BACKGROUND_Google", "Faces", "Faces_easy", "Leopards",
+      "Motorbikes", "accordion", "airplanes", "anchor", "ant",
+      "barrel", "bass", "beaver", "binocular", "bonsai", "brain",
+      "brontosaurus", "buddha", "butterfly", "camera", "cannon",
+      "car_side", "ceiling_fan", "cellphone", "chair", "chandelier",
+      "cougar_body", "cougar_face", "crab", "crayfish", "crocodile",
+      "crocodile_head", "cup", "dalmatian", "dollar_bill", "dolphin",
+      "dragonfly", "electric_guitar", "elephant", "emu", "euphonium",
+      "ewer", "ferry", "flamingo", "flamingo_head", "garfield", "gerenuk",
+      "gramophone", "grand_piano", "hawksbill", "headphone", "hedgehog",
+      "helicopter", "ibis", "inline_skate", "joshua_tree", "kangaroo",
+      "ketch", "lamp", "laptop", "llama", "lobster", "lotus", "mandolin",
+      "mayfly", "menorah", "metronome", "minaret", "nautilus", "octopus",
+      "okapi", "pagoda", "panda", "pigeon", "pizza", "platypus", "pyramid",
+      "revolver", "rhino", "rooster", "saxophone", "schooner", "scissors",
+      "scorpion", "sea_horse", "snoopy", "soccer_ball", "stapler", "starfish",
+      "stegosaurus", "stop_sign", "strawberry", "sunflower", "tick", "trilobite",
+      "umbrella", "watch", "water_lilly", "wheelchair", "wild_cat", "windsor_chair",
+      "wrench", "yin_yang"] // Replace with the actual class names list.
 
 async function loadModel() {
-  const model = await tf.loadLayersModel("output_directory/model.json");
+  const model = await tf.loadLayersModel('output_directory/model.json');
   return model;
 }
 
 function preprocessImage(image) {
-  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const inputTensor = tf.browser.fromPixels(imageData, 3).toFloat();
-  const normalizedTensor = inputTensor.div(tf.scalar(255));
-  const batchedTensor = normalizedTensor.expandDims(0);
-  return batchedTensor;
+  const tensor = tf.browser.fromPixels(image).resizeNearestNeighbor([224, 224]).toFloat();
+  const offset = tf.scalar(255 / 2);
+  const normalized = tensor.sub(offset).div(offset);
+  const batched = normalized.expandDims(0);
+  return batched;
 }
 
-async function classifyImage(model, image) {
-  const processedImage = preprocessImage(image);
-  const prediction = await model.predict(processedImage).data();
-  const topPrediction = Array.from(prediction)
-    .map((value, index) => ({ value, index }))
-    .sort((a, b) => b.value - a.value)[0];
-  return topPrediction;
+function displayPrediction(prediction) {
+  const predictionElement = document.getElementById("prediction");
+  predictionElement.textContent = `Predicted class: ${class_names[prediction]}`;
 }
 
-inputImage.addEventListener("change", async (event) => {
-  if (event.target.files && event.target.files[0]) {
-    const image = new Image();
-    image.src = URL.createObjectURL(event.target.files[0]);
-    image.onload = async () => {
-      const model = await loadModel();
-      const result = await classifyImage(model, image);
-      predictionElement.innerHTML = `Predicted class: ${result.index}, Confidence: ${result.value.toFixed(2)}`;
-    };
-  }
+document.getElementById("inputImage").addEventListener("change", async function (event) {
+  const model = await loadModel();
+  const image = new Image();
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  image.src = URL.createObjectURL(event.target.files[0]);
+  image.onload = async function () {
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const preprocessedImage = preprocessImage(image);
+    const prediction = model.predict(preprocessedImage).argMax(-1).dataSync()[0];
+    displayPrediction(prediction);
+  };
 });
