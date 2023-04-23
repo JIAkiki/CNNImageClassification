@@ -1,5 +1,7 @@
 body, html {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -10,6 +12,11 @@ body {
 
 .center {
   text-align: center;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
 }
 
 h1 {
