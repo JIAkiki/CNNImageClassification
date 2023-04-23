@@ -47,3 +47,11 @@ canvas {
   margin: 0 auto;
   margin-top: 20px;
 }
+
+#fileLabel {
+  font-size: 48px;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-block;
+  margin-bottom: 20px;
+}
