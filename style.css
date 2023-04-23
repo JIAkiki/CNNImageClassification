@@ -79,3 +79,8 @@ canvas {
 * {
   text-shadow: 2px 2px #fff, -2px -2px #fff, 2px -2px #fff, -2px 2px #fff;
 }
+
+#uploadText {
+  color: #fff;
+}
+
