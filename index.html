@@ -13,11 +13,16 @@
     body {
       font-family: "Daydream", sans-serif;
     }
+    .center {
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <center><h1> Upload your image to test the model.</h1></center>
-  <center><input type="file" id="inputImage" accept="image/*"></center>
+  <div class="center">
+    <h1>Upload your image to test the model.</h1>
+    <input type="file" id="inputImage" accept="image/*">
+  </div>
   <canvas id="canvas" width="224" height="224" style="display:none;"></canvas>
   <p id="prediction"></p>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
