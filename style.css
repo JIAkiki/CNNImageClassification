@@ -31,13 +31,22 @@ h1 {
 
 /* Style for file input label */
 #fileLabel {
-  font-size: 48px;
+  font-size: 36px;
   font-weight: bold;
   cursor: pointer;
   display: inline-block;
   margin-bottom: 20px;
   position: relative;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
 }
+
+#fileLabel:hover {
+  background-color: red;
+  color: #fff;
+}
+
 
 /* Style for file input */
 input[type="file"] {
