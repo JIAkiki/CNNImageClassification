@@ -1,21 +1,24 @@
-const canvas = document.getElementById('drawingCanvas');
-const ctx = canvas.getContext('2d');
+const drawingCanvas = document.getElementById('drawingCanvas');
+const ctx = drawingCanvas.getContext('2d');
 
 let drawing = false;
 
-canvas.addEventListener('mousedown', (e) => {
+drawingCanvas.addEventListener('mousedown', (event) => {
   drawing = true;
   ctx.beginPath();
-  ctx.moveTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top);
+  ctx.moveTo(event.clientX - drawingCanvas.offsetLeft, event.clientY - drawingCanvas.offsetTop);
 });
 
-canvas.addEventListener('mousemove', (e) => {
-  if (drawing) {
-    ctx.lineTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top);
-    ctx.stroke();
-  }
+drawingCanvas.addEventListener('mousemove', (event) => {
+  if (!drawing) return;
+  ctx.lineTo(event.clientX - drawingCanvas.offsetLeft, event.clientY - drawingCanvas.offsetTop);
+  ctx.stroke();
 });
 
-canvas.addEventListener('mouseup', () => {
+drawingCanvas.addEventListener('mouseup', () => {
+  drawing = false;
+});
+
+drawingCanvas.addEventListener('mouseout', () => {
   drawing = false;
 });
