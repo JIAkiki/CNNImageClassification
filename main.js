@@ -51,6 +51,14 @@ function speak(text) {
   speechSynthesis.speak(utterance);
 }
 
+const predictDrawingButton = document.getElementById('predictDrawing');
+predictDrawingButton.addEventListener('click', async () => {
+  const tensorImage = await tf.browser.fromPixels(drawingCanvas);
+  const classIndex = await predict(model, tensorImage);
+  const className = class_names[classIndex];
+  document.getElementById('prediction').innerText = className;
+});
+
 async function main() {
   const model = await loadModel();
   const inputImage = document.getElementById('inputImage');
