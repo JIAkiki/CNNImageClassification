@@ -3,15 +3,24 @@ const ctx = drawingCanvas.getContext('2d');
 
 let drawing = false;
 
+function getCursorPosition(canvas, event) {
+  const rect = canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  return { x, y };
+}
+
 drawingCanvas.addEventListener('mousedown', (event) => {
   drawing = true;
+  const cursorPosition = getCursorPosition(drawingCanvas, event);
   ctx.beginPath();
-  ctx.moveTo(event.clientX - drawingCanvas.offsetLeft, event.clientY - drawingCanvas.offsetTop);
+  ctx.moveTo(cursorPosition.x, cursorPosition.y);
 });
 
 drawingCanvas.addEventListener('mousemove', (event) => {
   if (!drawing) return;
-  ctx.lineTo(event.clientX - drawingCanvas.offsetLeft, event.clientY - drawingCanvas.offsetTop);
+  const cursorPosition = getCursorPosition(drawingCanvas, event);
+  ctx.lineTo(cursorPosition.x, cursorPosition.y);
   ctx.stroke();
 });
 
