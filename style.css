@@ -7,13 +7,13 @@
 /* Set font for entire page */
 body {
   font-family: "Daydream", sans-serif;
-  text-shadow: 1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
   height: 100%;
   margin: 0;
   padding: 0;
-  background-image: url("brainpixel.gif");
+  background-image: url("your-gif-image.gif");
   background-repeat: repeat;
   background-size: auto;
+  text-shadow: 1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
 }
 
 /* Center contents of page vertically */
@@ -72,4 +72,9 @@ canvas {
   text-align: center;
   margin: 0 auto;
   margin-top: 20px;
+}
+
+/* Style for white outline */
+* {
+  text-shadow: 2px 2px #fff, -2px -2px #fff, 2px -2px #fff, -2px 2px #fff;
 }
