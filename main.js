@@ -37,12 +37,29 @@ async function predict(model, image) {
   return classIndex;
 }
 
+async function loadImage(src) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    image.src = src;
+    image.onload = () => resolve(image);
+  });
+}
+
 async function main() {
   const model = await loadModel();
   const inputImage = document.getElementById('inputImage');
   inputImage.addEventListener('change', async () => {
-    const image = await tf.browser.fromPixels(inputImage);
-    const classIndex = await predict(model, image);
+    const file = inputImage.files[0];
+    const imageURL = URL.createObjectURL(file);
+    const image = await loadImage(imageURL);
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    const tensorImage = await tf.browser.fromPixels(canvas);
+    const classIndex = await predict(model, tensorImage);
     const className = class_names[classIndex];
     document.getElementById('prediction').innerText = className;
   });
