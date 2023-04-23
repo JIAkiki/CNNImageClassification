@@ -24,11 +24,16 @@ async function loadModel() {
 }
 
 function preprocessImage(image) {
-  const tensor = tf.browser.fromPixels(image).resizeNearestNeighbor([224, 224]).toFloat();
-  const offset = tf.scalar(255 / 2);
-  const normalized = tensor.sub(offset).div(offset);
-  const batched = normalized.expandDims(0);
-  return batched;
+  // Resize the image to match the input size of the model
+  const resizedImage = tf.image.resizeBilinear(image, [224, 224]);
+
+  // Rescale the image to match the range used during training (0-1)
+  const rescaledImage = resizedImage.div(tf.scalar(255.0));
+
+  // Add an extra dimension to match the expected input shape [1, 224, 224, 3]
+  const batchedImage = rescaledImage.expandDims(0);
+
+  return batchedImage;
 }
 
 function displayPrediction(prediction) {
