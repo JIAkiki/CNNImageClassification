@@ -1,0 +1,23 @@
+h1, p {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+input[type="file"] {
+  display: block;
+  margin: 0 auto;
+}
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  border: 1px solid #000;
+}
+
+#prediction {
+  font-size: 24px;
+  text-align: center;
+  margin: 0 auto;
+}
