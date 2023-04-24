@@ -74,6 +74,8 @@ async function main() {
 
     const tensorImage = await tf.browser.fromPixels(image);
     const predictedClassIndex = await predict(model, tensorImage);
+    const predictedClassName = class_names[predictedClassIndex];
+    document.getElementById('prediction').innerText = `Predicted: ${predictedClassName}`;
 
     if (predictedClassIndex === currentClassIndex) {
       score++;
