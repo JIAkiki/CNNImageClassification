@@ -6,6 +6,7 @@ async function loadClassNames() {
   return class_names;
 }
 
+
 async function loadModel() {
   const model = await tf.loadGraphModel('https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v1_100_224/classification/3/default/1', {fromTFHub: true});
   return model;
