@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CNN Image Classification</title>
+  <title>CNN Image Classification Game</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="score" class="top-right">Score: 0</div>
+  <div id="currentClass" class="center">Current Class: </div>
   <div class="center">
     <label for="inputImage" id="fileLabel">Choose an Image</label>
     <input type="file" id="inputImage" accept="image/*" style="display:none;">
@@ -15,22 +17,5 @@
   <p id="prediction"></p>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="main.js"></script>
-  <script>
-    document.querySelector("#fileLabel").addEventListener("click", function(event) {
-      event.preventDefault(); // prevent default behavior of label element
-      document.querySelector("#inputImage").click(); // trigger click event on file input element
-    });
-
-    document.querySelector("#inputImage").addEventListener("change", async function(event) {
-      const imageElement = document.createElement("img");
-      imageElement.src = URL.createObjectURL(event.target.files[0]);
-      imageElement.onload = async function() {
-        const image = await tf.browser.fromPixels(imageElement);
-        const classIndex = await predict(model, image);
-        const className = class_names[classIndex];
-        document.getElementById('prediction').innerText = className;
-      }
-    });
-  </script>
 </body>
 </html>
