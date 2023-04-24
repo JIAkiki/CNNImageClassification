@@ -46,13 +46,27 @@ async function loadImage(src) {
   });
 }
 
-function speak(text) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  speechSynthesis.speak(utterance);
+function getRandomClass(class_names) {
+  const randomIndex = Math.floor(Math.random() * class_names.length);
+  return class_names[randomIndex];
+}
+
+let score = 0;
+function updateScore() {
+  score++;
+  document.getElementById('score').innerText = `Score: ${score}`;
+}
+
+function displayNextClass() {
+  const nextClass = getRandomClass(class_names);
+  document.getElementById('currentClass').innerText = `Current Class: ${nextClass}`;
+  return nextClass;
 }
 
 async function main() {
   const model = await loadModel();
+  let currentClass = displayNextClass();
+
   const inputImage = document.getElementById('inputImage');
   inputImage.addEventListener('change', async () => {
     const file = inputImage.files[0];
@@ -67,6 +81,11 @@ async function main() {
     const classIndex = await predict(model, tensorImage);
     const className = class_names[classIndex];
     document.getElementById('prediction').innerText = className;
+
+    if (className === currentClass) {
+      updateScore();
+    }
+    currentClass = displayNextClass();
   });
 }
 
