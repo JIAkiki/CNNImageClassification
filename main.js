@@ -56,34 +56,34 @@ async function main() {
   const model = await loadModel();
   const class_names = await loadClassNames();
   let score = 0;
+  let currentClassIndex;
 
   function updateScore() {
     document.getElementById('scoreCounter').innerText = score;
   }
 
   async function displayNextClass() {
-    const classIndex = Math.floor(Math.random() * class_names.length);
-    const className = class_names[classIndex];
+    currentClassIndex = Math.floor(Math.random() * class_names.length);
+    const className = class_names[currentClassIndex];
     document.getElementById('nextClass').innerText = `Upload an image of: ${className}`;
-
-    const inputImage = document.getElementById('inputImage');
-    inputImage.addEventListener('change', async () => {
-      const file = inputImage.files[0];
-      const imageURL = URL.createObjectURL(file);
-      const image = await loadImage(imageURL);
-
-      const tensorImage = await tf.browser.fromPixels(image);
-      const predictedClassIndex = await predict(model, tensorImage);
-      const predictedClassName = class_names[predictedClassIndex];
-
-      if (predictedClassName === className) {
-        score++;
-        updateScore();
-      }
-
-      displayNextClass();
-    });
   }
+
+  const inputImage = document.getElementById('inputImage');
+  inputImage.addEventListener('change', async () => {
+    const file = inputImage.files[0];
+    const imageURL = URL.createObjectURL(file);
+    const image = await loadImage(imageURL);
+
+    const tensorImage = await tf.browser.fromPixels(image);
+    const predictedClassIndex = await predict(model, tensorImage);
+
+    if (predictedClassIndex === currentClassIndex) {
+      score++;
+      updateScore();
+    }
+
+    displayNextClass();
+  });
 
   displayNextClass();
 }
