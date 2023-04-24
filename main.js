@@ -57,31 +57,35 @@ async function main() {
   const class_names = await loadClassNames();
   let score = 0;
 
-  function displayNextClass() {
-    const nextClassIndex = Math.floor(Math.random() * class_names.length);
-    const nextClassName = class_names[nextClassIndex];
-    document.getElementById('nextClass').innerText = `Upload an image of: ${nextClassName}`;
+  function updateScore() {
+    document.getElementById('scoreCounter').innerText = score;
+  }
+
+  async function displayNextClass() {
+    const classIndex = Math.floor(Math.random() * class_names.length);
+    const className = class_names[classIndex];
+    document.getElementById('nextClass').innerText = `Upload an image of: ${className}`;
+
+    const inputImage = document.getElementById('inputImage');
+    inputImage.addEventListener('change', async () => {
+      const file = inputImage.files[0];
+      const imageURL = URL.createObjectURL(file);
+      const image = await loadImage(imageURL);
+
+      const tensorImage = await tf.browser.fromPixels(image);
+      const predictedClassIndex = await predict(model, tensorImage);
+      const predictedClassName = class_names[predictedClassIndex];
+
+      if (predictedClassName === className) {
+        score++;
+        updateScore();
+      }
+
+      displayNextClass();
+    });
   }
 
   displayNextClass();
-
-  document.getElementById('inputImage').addEventListener('change', async () => {
-    const file = document.getElementById('inputImage').files[0];
-    const imageURL = URL.createObjectURL(file);
-    const image = await loadImage(imageURL);
-
-    const tensorImage = await tf.browser.fromPixels(image);
-    const classIndex = await predict(model, tensorImage);
-    const className = class_names[classIndex];
-    document.getElementById('prediction').innerText = `Predicted: ${className}`;
-
-    if (className === document.getElementById('nextClass').innerText.slice(17)) {
-      score++;
-      document.getElementById('scoreCounter').innerText = score;
-    }
-
-    displayNextClass();
-  });
 }
 
 document.addEventListener('DOMContentLoaded', main);
