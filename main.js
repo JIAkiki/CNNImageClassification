@@ -37,6 +37,21 @@ async function predict(model, image) {
   return classIndex;
 }
 
+function preprocessCanvasDrawing(image) {
+  const invertedImage = tf.scalar(255).sub(image); // Invert the image
+  const resizedImage = tf.image.resizeBilinear(invertedImage, [224, 224]);
+  const rescaledImage = resizedImage.div(tf.scalar(255.0));
+  const batchedImage = rescaledImage.expandDims(0);
+  return batchedImage;
+}
+
+async function predictCanvas(model, image) {
+  const preprocessedImage = preprocessCanvasDrawing(image);
+  const prediction = model.predict(preprocessedImage);
+  const classIndex = prediction.argMax(-1).dataSync()[0];
+  return classIndex;
+}
+
 async function loadImage(src) {
   return new Promise((resolve) => {
     const image = new Image();
@@ -50,7 +65,6 @@ function speak(text) {
   const utterance = new SpeechSynthesisUtterance(text);
   speechSynthesis.speak(utterance);
 }
-
 
 async function main() {
   const model = await loadModel();
@@ -73,7 +87,7 @@ async function main() {
   const predictDrawingButton = document.getElementById('predictDrawing');
   predictDrawingButton.addEventListener('click', async () => {
     const tensorImage = await tf.browser.fromPixels(canvas);
-    const classIndex = await predict(model, tensorImage);
+    const classIndex = await predictCanvas(model, tensorImage);
     const className = class_names[classIndex];
     document.getElementById('prediction').innerText = className;
   });
