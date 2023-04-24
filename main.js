@@ -1,25 +1,13 @@
-const class_names = ["BACKGROUND_Google", "Faces", "Faces_easy", "Leopards",
-      "Motorbikes", "accordion", "airplanes", "anchor", "ant",
-      "barrel", "bass", "beaver", "binocular", "bonsai", "brain",
-      "brontosaurus", "buddha", "butterfly", "camera", "cannon",
-      "car_side", "ceiling_fan", "cellphone", "chair", "chandelier",
-      "cougar_body", "cougar_face", "crab", "crayfish", "crocodile",
-      "crocodile_head", "cup", "dalmatian", "dollar_bill", "dolphin",
-      "dragonfly", "electric_guitar", "elephant", "emu", "euphonium",
-      "ewer", "ferry", "flamingo", "flamingo_head", "garfield", "gerenuk",
-      "gramophone", "grand_piano", "hawksbill", "headphone", "hedgehog",
-      "helicopter", "ibis", "inline_skate", "joshua_tree", "kangaroo",
-      "ketch", "lamp", "laptop", "llama", "lobster", "lotus", "mandolin",
-      "mayfly", "menorah", "metronome", "minaret", "nautilus", "octopus",
-      "okapi", "pagoda", "panda", "pigeon", "pizza", "platypus", "pyramid",
-      "revolver", "rhino", "rooster", "saxophone", "schooner", "scissors",
-      "scorpion", "sea_horse", "snoopy", "soccer_ball", "stapler", "starfish",
-      "stegosaurus", "stop_sign", "strawberry", "sunflower", "tick", "trilobite",
-      "umbrella", "watch", "water_lilly", "wheelchair", "wild_cat", "windsor_chair",
-      "wrench", "yin_yang"]
+
+async function loadClassNames() {
+  const response = await fetch('imagenet_labels.txt');
+  const text = await response.text();
+  const class_names = text.split('\n');
+  return class_names;
+}
 
 async function loadModel() {
-  const model = await tf.loadLayersModel('output_directory/model.json');
+  const model = await tf.loadGraphModel('https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v1_100_224/classification/3/default/1', {fromTFHub: true});
   return model;
 }
 
@@ -65,7 +53,7 @@ function displayNextClass() {
 
 async function main() {
   const model = await loadModel();
-  let currentClass = displayNextClass();
+  const class_names = await loadClassNames();
 
   const inputImage = document.getElementById('inputImage');
   inputImage.addEventListener('change', async () => {
