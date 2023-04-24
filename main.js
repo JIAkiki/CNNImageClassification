@@ -31,7 +31,8 @@ function preprocessImage(image) {
 }
 
 async function predict(model, image) {
-  const preprocessedImage = preprocessImage(image);
+  const invertedImage = tf.scalar(255).sub(image); // Invert the image
+  const preprocessedImage = preprocessImage(invertedImage);
   const prediction = model.predict(preprocessedImage);
   const classIndex = prediction.argMax(-1).dataSync()[0];
   return classIndex;
