@@ -2,8 +2,7 @@
 async function loadClassNames() {
   const response = await fetch('imagenet_labels.txt');
   const text = await response.text();
-  const lines = text.split('\n');
-  const class_names = lines.map((line) => line.trim());
+  const class_names = text.split('\n');
   return class_names;
 }
 
@@ -46,15 +45,17 @@ function updateScore() {
   document.getElementById('score').innerText = `Score: ${score}`;
 }
 
-function displayNextClass() {
-  const nextClass = getRandomClass(class_names);
-  document.getElementById('currentClass').innerText = `Current Class: ${nextClass}`;
-  return nextClass;
+function displayNextClass(class_names) {
+  const randomIndex = Math.floor(Math.random() * class_names.length);
+  const className = class_names[randomIndex];
+  document.getElementById('classToGuess').innerText = className;
 }
 
 async function main() {
   const model = await loadModel();
   const class_names = await loadClassNames();
+
+  displayNextClass(class_names);
 
   const inputImage = document.getElementById('inputImage');
   inputImage.addEventListener('change', async () => {
@@ -69,12 +70,12 @@ async function main() {
     const tensorImage = await tf.browser.fromPixels(canvas);
     const classIndex = await predict(model, tensorImage);
     const className = class_names[classIndex];
-    document.getElementById('prediction').innerText = className;
 
-    if (className === currentClass) {
+    const currentClassToGuess = document.getElementById('classToGuess').innerText;
+    if (className === currentClassToGuess) {
       updateScore();
+      displayNextClass(class_names);
     }
-    currentClass = displayNextClass();
   });
 }
 
