@@ -2,7 +2,8 @@
 async function loadClassNames() {
   const response = await fetch('imagenet_labels.txt');
   const text = await response.text();
-  const class_names = text.split('\n');
+  const lines = text.split('\n');
+  const class_names = lines.map((line) => line.trim());
   return class_names;
 }
 
