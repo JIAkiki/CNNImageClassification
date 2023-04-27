@@ -34,7 +34,7 @@ async function loadImage(src) {
 }
 
 async function loadStyleModel() {
-  const model = await tf.loadGraphModel('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/intops/2', { fromTFHub: true });
+  const model = await tf.loadGraphModel('https://tfhub.dev/google/tfjs-model/magenta/arbitrary-image-stylization-v1-256/1/default/1', { fromTFHub: true });
   return model;
 }
 
