@@ -57,7 +57,7 @@ async function displayNextClass() {
   document.getElementById('nextClass').innerText = `Upload an image of: ${className}`;
 }
 
-async function handleImageUpload() {
+async function handleImageUpload(model, class_names) {
   const file = inputImage.files[0];
   const imageURL = URL.createObjectURL(file);
   const image = await loadImage(imageURL);
@@ -90,7 +90,7 @@ async function main() {
   displayNextClass();
 
   const inputImage = document.getElementById('inputImage');
-  inputImage.addEventListener('change', handleImageUpload);
+  inputImage.addEventListener('change', () => handleImageUpload(model, class_names));
 }
 
 main();
