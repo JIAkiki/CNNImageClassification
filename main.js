@@ -34,13 +34,14 @@ async function loadImage(src) {
 }
 
 async function loadStyleModel() {
-  const model = await styleTransfer.load();
-  return model;
+  const styleModel = new FastStyleTransfer();
+  await styleModel.loadModel('/models/van_gogh/style.pb');
+  return styleModel;
 }
 
 async function applyStyle(image, model) {
   const content_image = image;
-  const content_image_resized = tf.image.resizeBilinear(content_image, [model.inputSize, model.inputSize]);
+  const content_image_resized = tf.image.resizeBilinear(content_image, [256, 256]);
   const stylized_image = await model.stylize(content_image_resized);
   return stylized_image;
 }
