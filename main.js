@@ -56,7 +56,7 @@ async function main() {
 
   let score = 0;
   let currentClassIndex;
-  
+
   function updateScore() {
     document.getElementById('scoreCounter').innerText = score;
   }
