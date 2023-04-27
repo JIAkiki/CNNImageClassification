@@ -1,4 +1,3 @@
-
 async function loadClassNames() {
   const response = await fetch('imagenet_labels.txt');
   const text = await response.text();
@@ -34,61 +33,64 @@ async function loadImage(src) {
   });
 }
 
-function getRandomClass(class_names) {
-  const randomIndex = Math.floor(Math.random() * class_names.length);
-  return class_names[randomIndex];
+async function loadStyleModel() {
+  const styleModel = await tf.loadGraphModel('https://tfhub.dev/google/tfjs-model/imagenet/style_transfer_model/v0.4/1/default/1', {fromTFHub: true});
+  return styleModel;
+}
+
+async function applyStyle(image, styleModel) {
+  const preprocessedImage = preprocessImage(image);
+  const styledImage = await styleModel.predict(preprocessedImage);
+  const resizedStyledImage = styledImage.squeeze().mul(255).clipByValue(0, 255).toInt();
+  return resizedStyledImage;
 }
 
 let score = 0;
 function updateScore() {
-  score++;
-  document.getElementById('score').innerText = `Score: ${score}`;
+  document.getElementById('scoreCounter').innerText = score;
 }
 
-function displayNextClass(class_names) {
+async function displayNextClass() {
+  const class_names = await loadClassNames();
   const randomIndex = Math.floor(Math.random() * class_names.length);
   const className = class_names[randomIndex];
-  document.getElementById('classToGuess').innerText = className;
+  document.getElementById('nextClass').innerText = `Upload an image of: ${className}`;
+}
+
+async function handleImageUpload() {
+  const file = inputImage.files[0];
+  const imageURL = URL.createObjectURL(file);
+  const image = await loadImage(imageURL);
+
+  const tensorImage = await tf.browser.fromPixels(image);
+  const predictedClassIndex = await predict(model, tensorImage);
+  const predictedClassName = class_names[predictedClassIndex];
+  document.getElementById('prediction').innerText = `Predicted: ${predictedClassName}`;
+
+  if (predictedClassIndex === currentClassIndex) {
+    score++;
+    updateScore();
+  }
+
+  // Apply the style to the image and set it as the background
+  const styleModel = await loadStyleModel();
+  const styledTensorImage = await applyStyle(image, styleModel);
+  const styledImage = await tf.browser.toPixels(styledTensorImage);
+  const styledImageBlob = new Blob([styledImage], {type: 'image/png'});
+  const styledImageURL = URL.createObjectURL(styledImageBlob);
+  document.body.style.backgroundImage = `url(${styledImageURL})`;
+
+  displayNextClass();
 }
 
 async function main() {
   const model = await loadModel();
   const class_names = await loadClassNames();
-  let score = 0;
-  let currentClassIndex;
 
-  function updateScore() {
-    document.getElementById('scoreCounter').innerText = score;
-  }
-
-  async function displayNextClass() {
-    currentClassIndex = Math.floor(Math.random() * class_names.length);
-    const className = class_names[currentClassIndex];
-    document.getElementById('nextClass').innerText = `Upload an image of: ${className}`;
-  }
-
-  async function handleImageUpload() {
-    const file = inputImage.files[0];
-    const imageURL = URL.createObjectURL(file);
-    const image = await loadImage(imageURL);
-
-    const tensorImage = await tf.browser.fromPixels(image);
-    const predictedClassIndex = await predict(model, tensorImage);
-    const predictedClassName = class_names[predictedClassIndex];
-    document.getElementById('prediction').innerText = `Predicted: ${predictedClassName}`;
-
-    if (predictedClassIndex === currentClassIndex) {
-      score++;
-      updateScore();
-    }
-
-    displayNextClass();
-  }
+  displayNextClass();
 
   const inputImage = document.getElementById('inputImage');
   inputImage.addEventListener('change', handleImageUpload);
-
-  displayNextClass();
 }
 
 main();
