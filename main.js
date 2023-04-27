@@ -34,19 +34,14 @@ async function loadImage(src) {
 }
 
 async function loadStyleModel() {
-  const model = await tf.loadGraphModel('https://tfhub.dev/google/tfjs-model/magenta/arbitrary-image-stylization-v1-256/1/default/1', { fromTFHub: true });
+  const model = await styleTransfer.load();
   return model;
 }
 
 async function applyStyle(image, model) {
-  const style_image = await tf.browser.fromPixels(await loadImage('path/to/van-gogh-style-image.jpg'));
   const content_image = image;
-  const style_image_resized = tf.image.resizeBilinear(style_image, [256, 256]);
-  const content_image_resized = tf.image.resizeBilinear(content_image, [256, 256]);
-  const style_input = style_image_resized.expandDims();
-  const content_input = content_image_resized.expandDims();
-  const outputs = await model.executeAsync({ 'style_image': style_input, 'content_image': content_input });
-  const stylized_image = outputs[0].squeeze();
+  const content_image_resized = tf.image.resizeBilinear(content_image, [model.inputSize, model.inputSize]);
+  const stylized_image = await model.stylize(content_image_resized);
   return stylized_image;
 }
 
