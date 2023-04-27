@@ -33,23 +33,6 @@ async function loadImage(src) {
   });
 }
 
-async function loadStyleModel() {
-  const model = await tf.loadGraphModel('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/intops/2', { fromTFHub: true });
-  return model;
-}
-
-async function applyStyle(image, model) {
-  const style_image = await tf.browser.fromPixels(await loadImage('path/to/van-gogh-style-image.jpg'));
-  const content_image = image;
-  const style_image_resized = tf.image.resizeBilinear(style_image, [256, 256]);
-  const content_image_resized = tf.image.resizeBilinear(content_image, [256, 256]);
-  const style_input = style_image_resized.expandDims();
-  const content_input = content_image_resized.expandDims();
-  const outputs = await model.executeAsync({ 'style_image': style_input, 'content_image': content_input });
-  const stylized_image = outputs[0].squeeze();
-  return stylized_image;
-}
-
 async function main() {
   const model = await loadModel();
   const class_names = await loadClassNames();
@@ -81,22 +64,6 @@ async function main() {
       score++;
       updateScore();
     }
-
-    // Apply the style to the image and set it as the background
-    const styleModel = await loadStyleModel();
-    const styledTensorImage = await applyStyle(tensorImage, styleModel);
-    const styledImageBlob = await new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = styledTensorImage.shape[1];
-      canvas.height = styledTensorImage.shape[0];
-      tf.browser.toPixels(styledTensorImage, canvas).then(() => {
-        canvas.toBlob(resolve, 'image/png');
-      });
-    });
-    const styledImageURL = URL.createObjectURL(styledImageBlob);
-    document.body.style.backgroundImage = `url(${styledImageURL})`;
-
     displayNextClass();
   }
 
