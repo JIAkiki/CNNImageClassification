@@ -53,25 +53,27 @@ async function main() {
     document.getElementById('nextClass').innerText = `Upload an image of: ${className}`;
   }
 
-  async function handleImageUpload() {
+  const inputImage = document.getElementById('inputImage');
+  inputImage.addEventListener("change", async () => {
     const file = inputImage.files[0];
     const imageURL = URL.createObjectURL(file);
     const image = await loadImage(imageURL);
 
-    const tensorImage = await tf.browser.fromPixels(image);
-    const predictedClassIndex = await predict(model, tensorImage);
-    const predictedClassName = class_names[predictedClassIndex];
-    document.getElementById('prediction').innerText = `Predicted: ${predictedClassName}`;
+    const { classIndices, topNIndices, topNProbabilities } = await predict(model, image);
+    const className = class_names[classIndices[0]];
 
-    if (predictedClassIndex === currentClassIndex) {
+    if (classIndices[0] === currentClassIndex) {
       score++;
       updateScore();
     }
-    displayNextClass();
-  }
 
-  const inputImage = document.getElementById('inputImage');
-  inputImage.addEventListener('change', handleImageUpload);
+    let predictionDisplay = `Predicted: ${className} (${(topNProbabilities[0] * 100).toFixed(2)}%)<br>`;
+    for (let i = 1; i < topNIndices.length; i++) {
+      predictionDisplay += `${i + 1}. ${class_names[topNIndices[i]]} (${(topNProbabilities[i] * 100).toFixed(2)}%)<br>`;
+    }
+    document.getElementById("prediction").innerHTML = predictionDisplay;
+    displayNextClass();
+  });
 
   displayNextClass();
 }
