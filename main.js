@@ -11,7 +11,12 @@ async function loadModel() {
 }
 
 function preprocessImage(image) {
-  const tensorImage = tf.browser.fromPixels(image);
+  const canvas = document.createElement('canvas');
+  canvas.width = image.width;
+  canvas.height = image.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(image, 0, 0);
+  const tensorImage = tf.browser.fromPixels(canvas);
   const resizedImage = tf.image.resizeBilinear(tensorImage, [224, 224]);
   const rescaledImage = resizedImage.div(tf.scalar(255.0));
   const batchedImage = rescaledImage.expandDims(0);
@@ -60,8 +65,7 @@ async function main() {
     const imageURL = URL.createObjectURL(file);
     const image = await loadImage(imageURL);
 
-    const tensorImage = await tf.browser.fromPixels(image);
-    const { classIndices, topNIndices, topNProbabilities } = await predict(model, tensorImage);
+    const { classIndices, topNIndices, topNProbabilities } = await predict(model, image);
     const className = class_names[classIndices[0]];
 
     let predictionDisplay = `Predicted: ${className} (${(topNProbabilities[0] * 100).toFixed(2)}%)<br>`;
