@@ -95,8 +95,13 @@ async function main() {
 
   const inputImage = document.getElementById('inputImage');
   inputImage.addEventListener("change", async () => {
-    const file = inputImage.files[0];
-    const image = await loadImage(file);
+  if (!inputImage.files || !inputImage.files[0]) {
+    console.error("No file was selected");
+    return;
+  }
+  
+  const file = inputImage.files[0];
+  const image = await loadImage(file);
 
     const { classIndices, topNIndices, topNProbabilities } = await predict(model, image);
     const className = class_names[classIndices[0]];
