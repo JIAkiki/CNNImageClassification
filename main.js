@@ -66,14 +66,23 @@ function drawSaliencyMap(saliencyMap, canvas, width, height) {
   const imageData = ctx.createImageData(width, height);
   const data = imageData.data;
   const mapData = saliencyMap.dataSync();
+  
   for (let i = 0; i < width * height; i++) {
     const intensity = mapData[i];
-    data[i * 4] = intensity;
-    data[i * 4 + 1] = intensity;
-    data[i * 4 + 2] = intensity;
+    const color = intensityToRGB(intensity);
+    data[i * 4] = color[0];
+    data[i * 4 + 1] = color[1];
+    data[i * 4 + 2] = color[2];
     data[i * 4 + 3] = 255;
   }
   ctx.putImageData(imageData, 0, 0);
+}
+
+function intensityToRGB(intensity) {
+  const r = intensity < 128 ? 255 : Math.round(511 - 4 * intensity);
+  const g = intensity < 128 ? Math.round(4 * intensity) : 255;
+  const b = intensity < 128 ? 0 : Math.round(4 * intensity - 511);
+  return [r, g, b];
 }
 
 async function main() {
