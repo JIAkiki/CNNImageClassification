@@ -23,8 +23,8 @@ async function predict(model, image) {
   const prediction = model.predict(preprocessedImage);
   const classIndices = prediction.argMax(-1).dataSync();
   const topK = await prediction.topk(5);
-  const topNIndices = await topK.values.data();
-  const topNProbabilities = await topK.indices.data();
+  const topNIndices = await topK.indices.data();
+  const topNProbabilities = await topK.values.data();
   return { classIndices, topNIndices, topNProbabilities };
 }
 
@@ -75,7 +75,7 @@ async function main() {
       updateScore();
     }
     displayNextClass();
-});
+  });
 
   displayNextClass();
 }
