@@ -61,19 +61,22 @@ async function computeSaliencyMap(model, image, classIndex) {
 
 
 
-function drawSaliencyMap(saliencyMap, canvas, image) {
+function drawSaliencyMap(saliencyMap, canvas, overlayCanvas, image) {
   const ctx = canvas.getContext('2d');
   canvas.width = image.width;
   canvas.height = image.height;
 
-  // Draw the original image
+  // Draw the original image on the canvas
   ctx.drawImage(image, 0, 0, image.width, image.height);
 
-  // Draw the saliency map as a heatmap on top of the original image
-  const imageData = ctx.getImageData(0, 0, image.width, image.height);
+  // Draw the saliency map on a separate overlay canvas
+  const overlayCtx = overlayCanvas.getContext('2d');
+  overlayCanvas.width = image.width;
+  overlayCanvas.height = image.height;
+  const imageData = overlayCtx.createImageData(image.width, image.height);
   const data = imageData.data;
   const mapData = saliencyMap.dataSync();
-  
+
   for (let i = 0; i < image.width * image.height; i++) {
     const intensity = mapData[i];
     const color = intensityToRGB(intensity);
@@ -82,8 +85,9 @@ function drawSaliencyMap(saliencyMap, canvas, image) {
     data[i * 4 + 2] = color[2];
     data[i * 4 + 3] = 255;
   }
-  ctx.putImageData(imageData, 0, 0);
+  overlayCtx.putImageData(imageData, 0, 0);
 }
+
 
 
 function intensityToRGB(intensity) {
