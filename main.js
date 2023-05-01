@@ -11,11 +11,13 @@ async function loadModel() {
 }
 
 function preprocessImage(image) {
-  const resizedImage = tf.image.resizeBilinear(image, [224, 224]);
+  const tensorImage = tf.browser.fromPixels(image);
+  const resizedImage = tf.image.resizeBilinear(tensorImage, [224, 224]);
   const rescaledImage = resizedImage.div(tf.scalar(255.0));
   const batchedImage = rescaledImage.expandDims(0);
   return batchedImage;
 }
+
 
 async function predict(model, image) {
   const preprocessedImage = preprocessImage(image);
