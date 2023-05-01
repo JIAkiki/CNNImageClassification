@@ -86,11 +86,11 @@ input[type="file"] {
   text-shadow: 1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000;
 }
 
-/* Style for the saliency map canvas */
-#saliencyMap {
-  width: 224px;
-  height: 224px;
-  border: 1px solid #000;
-  margin: 20px auto;
+#saliencyMap,
+#saliencyMapOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
+
 
