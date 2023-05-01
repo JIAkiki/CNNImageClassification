@@ -20,9 +20,12 @@ function preprocessImage(image) {
 async function predict(model, image) {
   const preprocessedImage = preprocessImage(image);
   const prediction = model.predict(preprocessedImage);
-  const classIndex = prediction.argMax(-1).dataSync()[0];
-  return classIndex;
+  const classIndices = prediction.argMax(-1).dataSync();
+  const topNIndices = await prediction.topk(5).values.data();
+  const topNProbabilities = await prediction.topk(5).values.data();
+  return { classIndices, topNIndices, topNProbabilities };
 }
+
 
 async function loadImage(src) {
   return new Promise((resolve) => {
