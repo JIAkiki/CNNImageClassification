@@ -61,13 +61,20 @@ async function computeSaliencyMap(model, image, classIndex) {
 
 
 
-function drawSaliencyMap(saliencyMap, canvas, width, height) {
+function drawSaliencyMap(saliencyMap, canvas, image) {
   const ctx = canvas.getContext('2d');
-  const imageData = ctx.createImageData(width, height);
+  canvas.width = image.width;
+  canvas.height = image.height;
+
+  // Draw the original image
+  ctx.drawImage(image, 0, 0, image.width, image.height);
+
+  // Draw the saliency map as a heatmap on top of the original image
+  const imageData = ctx.getImageData(0, 0, image.width, image.height);
   const data = imageData.data;
   const mapData = saliencyMap.dataSync();
   
-  for (let i = 0; i < width * height; i++) {
+  for (let i = 0; i < image.width * image.height; i++) {
     const intensity = mapData[i];
     const color = intensityToRGB(intensity);
     data[i * 4] = color[0];
@@ -77,6 +84,7 @@ function drawSaliencyMap(saliencyMap, canvas, width, height) {
   }
   ctx.putImageData(imageData, 0, 0);
 }
+
 
 function intensityToRGB(intensity) {
   const r = intensity < 128 ? 255 : Math.round(511 - 4 * intensity);
@@ -125,7 +133,7 @@ async function main() {
     const canvas = document.getElementById('saliencyMap');
     canvas.width = image.width;
     canvas.height = image.height;
-    drawSaliencyMap(saliencyMap, canvas, image.width, image.height);
+    drawSaliencyMap(saliencyMap, canvas, image);
 
     if (classIndices[0] === currentClassIndex) {
       score++;
