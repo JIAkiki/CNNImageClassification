@@ -42,6 +42,32 @@ async function loadImage(src) {
   });
 }
 
+async function computeSaliencyMap(model, image, classIndex) {
+  const preprocessedImage = preprocessImage(image);
+  const dy = tf.oneHot(tf.tensor1d([classIndex], 'int32'), 1000);
+  const gradients = tf.grad((x) => model.predict(x));
+  const saliencyMap = gradients(preprocessedImage.mul(dy));
+  const maxVal = saliencyMap.max();
+  const minVal = saliencyMap.min();
+  const normalizedSaliencyMap = saliencyMap.sub(minVal).div(maxVal.sub(minVal));
+  return normalizedSaliencyMap.squeeze().mul(255).toInt();
+}
+
+function drawSaliencyMap(saliencyMap, canvas, width, height) {
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.createImageData(width, height);
+  const data = imageData.data;
+  const mapData = saliencyMap.dataSync();
+  for (let i = 0; i < width * height; i++) {
+    const intensity = mapData[i];
+    data[i * 4] = intensity;
+    data[i * 4 + 1] = intensity;
+    data[i * 4 + 2] = intensity;
+    data[i * 4 + 3] = 255;
+  }
+  ctx.putImageData(imageData, 0, 0);
+}
+
 async function main() {
   const model = await loadModel();
   const class_names = await loadClassNames();
@@ -74,12 +100,18 @@ async function main() {
     }
     document.getElementById("prediction").innerHTML = predictionDisplay;
 
+    const saliencyMap = await computeSaliencyMap(model, image, classIndices[0]);
+    const canvas = document.getElementById('saliencyMap');
+    canvas.width = image.width;
+    canvas.height = image.height;
+    drawSaliencyMap(saliencyMap, canvas, image.width, image.height);
+
     if (classIndices[0] === currentClassIndex) {
       score++;
       updateScore();
     }
     displayNextClass();
-  });
+});
 
   displayNextClass();
 }
