@@ -18,7 +18,6 @@ function preprocessImage(image) {
   return batchedImage;
 }
 
-
 async function predict(model, image) {
   const preprocessedImage = preprocessImage(image);
   const prediction = model.predict(preprocessedImage);
@@ -28,8 +27,6 @@ async function predict(model, image) {
   const topNProbabilities = await topK.indices.data();
   return { classIndices, topNIndices, topNProbabilities };
 }
-
-
 
 async function loadImage(src) {
   return new Promise((resolve) => {
