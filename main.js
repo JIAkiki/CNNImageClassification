@@ -50,7 +50,7 @@ async function computeSaliencyMap(model, image, classIndex) {
   const preprocessedImage = preprocessImage(image);
   const gradients = tf.grad((x) => model.predict(x));
   const gradTensor = gradients(preprocessedImage);
-  const dy = tf.oneHot(tf.tensor1d([classIndex], 'int32'), 1000).reshape([1, 1, 1, 1000]);
+  const dy = tf.oneHot(tf.tensor1d([classIndex], 'int32'), 1000).reshape([1, 1000]);
   const saliencyMap = tf.sum(gradTensor.mul(dy), -1);
   const maxVal = saliencyMap.max();
   const minVal = saliencyMap.min();
