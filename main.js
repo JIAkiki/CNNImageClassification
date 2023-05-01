@@ -60,21 +60,22 @@ async function main() {
     const imageURL = URL.createObjectURL(file);
     const image = await loadImage(imageURL);
 
-    const { classIndices, topNIndices, topNProbabilities } = await predict(model, image);
+    const tensorImage = await tf.browser.fromPixels(image);
+    const { classIndices, topNIndices, topNProbabilities } = await predict(model, tensorImage);
     const className = class_names[classIndices[0]];
-
-    if (classIndices[0] === currentClassIndex) {
-      score++;
-      updateScore();
-    }
 
     let predictionDisplay = `Predicted: ${className} (${(topNProbabilities[0] * 100).toFixed(2)}%)<br>`;
     for (let i = 1; i < topNIndices.length; i++) {
       predictionDisplay += `${i + 1}. ${class_names[topNIndices[i]]} (${(topNProbabilities[i] * 100).toFixed(2)}%)<br>`;
     }
     document.getElementById("prediction").innerHTML = predictionDisplay;
+
+    if (classIndices[0] === currentClassIndex) {
+      score++;
+      updateScore();
+    }
     displayNextClass();
-  });
+});
 
   displayNextClass();
 }
