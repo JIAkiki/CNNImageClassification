@@ -33,20 +33,24 @@ async function predict(model, image) {
   return { classIndices, topNIndices, topNProbabilities };
 }
 
-async function loadImage(src) {
+async function loadImage(file) {
   return new Promise((resolve) => {
-    const image = new Image();
-    image.crossOrigin = 'anonymous';
-    image.src = src;
-    image.onload = () => resolve(image);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const image = new Image();
+      image.crossOrigin = 'anonymous';
+      image.src = event.target.result;
+      image.onload = () => resolve(image);
+    };
+    reader.readAsDataURL(file);
   });
 }
 
 async function computeSaliencyMap(model, image, classIndex) {
   const preprocessedImage = preprocessImage(image);
-  const dy = tf.oneHot(tf.tensor1d([classIndex], 'int32'), 1000);
   const gradients = tf.grad((x) => model.predict(x));
   const gradTensor = gradients(preprocessedImage);
+  const dy = tf.oneHot(tf.tensor1d([classIndex], 'int32'), 1000).reshape([1, 1, 1, 1000]);
   const saliencyMap = tf.sum(gradTensor.mul(dy), -1);
   const maxVal = saliencyMap.max();
   const minVal = saliencyMap.min();
@@ -90,8 +94,7 @@ async function main() {
   const inputImage = document.getElementById('inputImage');
   inputImage.addEventListener("change", async () => {
     const file = inputImage.files[0];
-    const imageURL = URL.createObjectURL(file);
-    const image = await loadImage(imageURL);
+    const image = await loadImage(file);
 
     const { classIndices, topNIndices, topNProbabilities } = await predict(model, image);
     const className = class_names[classIndices[0]];
