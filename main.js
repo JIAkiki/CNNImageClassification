@@ -135,9 +135,11 @@ async function main() {
 
     const saliencyMap = await computeSaliencyMap(model, image, classIndices[0]);
     const canvas = document.getElementById('saliencyMap');
+    const overlayCanvas = document.getElementById('saliencyMapOverlay');
     canvas.width = image.width;
     canvas.height = image.height;
-    drawSaliencyMap(saliencyMap, canvas, image);
+    drawSaliencyMap(saliencyMap, canvas, overlayCanvas, image);
+
 
     if (classIndices[0] === currentClassIndex) {
       score++;
