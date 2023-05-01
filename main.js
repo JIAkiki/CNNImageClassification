@@ -46,57 +46,6 @@ async function loadImage(file) {
   });
 }
 
-async function computeSaliencyMap(model, image, classIndex) {
-  const preprocessedImage = preprocessImage(image);
-  const gradients = tf.grad((x) => model.predict(x));
-  const gradTensor = gradients(preprocessedImage);
-  const dy = tf.oneHot(tf.tensor1d([classIndex], 'int32'), 1000).reshape([1, 1000]);
-  const reducedGradTensor = gradTensor.sum(-1).expandDims(-1);
-  const saliencyMap = tf.sum(reducedGradTensor.mul(dy), -1);
-  const maxVal = saliencyMap.max();
-  const minVal = saliencyMap.min();
-  const normalizedSaliencyMap = saliencyMap.sub(minVal).div(maxVal.sub(minVal));
-  return normalizedSaliencyMap.squeeze().mul(255).toInt();
-}
-
-
-
-function drawSaliencyMap(saliencyMap, canvas, overlayCanvas, image) {
-  const ctx = canvas.getContext('2d');
-  canvas.width = image.width;
-  canvas.height = image.height;
-
-  // Draw the original image on the canvas
-  ctx.drawImage(image, 0, 0, image.width, image.height);
-
-  // Draw the saliency map on a separate overlay canvas
-  const overlayCtx = overlayCanvas.getContext('2d');
-  overlayCanvas.width = image.width;
-  overlayCanvas.height = image.height;
-  const imageData = overlayCtx.createImageData(image.width, image.height);
-  const data = imageData.data;
-  const mapData = saliencyMap.dataSync();
-
-  for (let i = 0; i < image.width * image.height; i++) {
-    const intensity = mapData[i];
-    const color = intensityToRGB(intensity);
-    data[i * 4] = color[0];
-    data[i * 4 + 1] = color[1];
-    data[i * 4 + 2] = color[2];
-    data[i * 4 + 3] = 255;
-  }
-  overlayCtx.putImageData(imageData, 0, 0);
-}
-
-
-
-function intensityToRGB(intensity) {
-  const r = intensity < 128 ? 255 : Math.round(511 - 4 * intensity);
-  const g = intensity < 128 ? Math.round(4 * intensity) : 255;
-  const b = intensity < 128 ? 0 : Math.round(4 * intensity - 511);
-  return [r, g, b];
-}
-
 async function main() {
   const model = await loadModel();
   const class_names = await loadClassNames();
@@ -116,13 +65,8 @@ async function main() {
 
   const inputImage = document.getElementById('inputImage');
   inputImage.addEventListener("change", async () => {
-  if (!inputImage.files || !inputImage.files[0]) {
-    console.error("No file was selected");
-    return;
-  }
-  
-  const file = inputImage.files[0];
-  const image = await loadImage(file);
+    const file = inputImage.files[0];
+    const image = await loadImage(file);
 
     const { classIndices, topNIndices, topNProbabilities } = await predict(model, image);
     const className = class_names[classIndices[0]];
@@ -133,20 +77,12 @@ async function main() {
     }
     document.getElementById("prediction").innerHTML = predictionDisplay;
 
-    const saliencyMap = await computeSaliencyMap(model, image, classIndices[0]);
-    const canvas = document.getElementById('saliencyMap');
-    const overlayCanvas = document.getElementById('saliencyMapOverlay');
-    canvas.width = image.width;
-    canvas.height = image.height;
-    drawSaliencyMap(saliencyMap, canvas, overlayCanvas, image);
-
-
     if (classIndices[0] === currentClassIndex) {
       score++;
       updateScore();
     }
     displayNextClass();
-});
+  });
 
   displayNextClass();
 }
