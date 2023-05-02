@@ -29,7 +29,7 @@ body {
 /* Center contents of page vertically */
 .center {
   text-align: center;
-  min-height: 80vh; /* Change this to 'min-height' */
+  min-height: 80vh; 
   display: flex;
   flex-direction: column;
   justify-content: center;
