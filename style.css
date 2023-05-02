@@ -29,12 +29,13 @@ body {
 /* Center contents of page vertically */
 .center {
   text-align: center;
-  height: 80vh;
+  min-height: 80vh; /* Change this to 'min-height' */
   display: flex;
   flex-direction: column;
   justify-content: center;
   margin: auto;
 }
+
 
 /* Style for title */
 h1 {
