@@ -29,13 +29,12 @@ body {
 /* Center contents of page vertically */
 .center {
   text-align: center;
-  min-height: 80vh; 
+  height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   margin: auto;
 }
-
 
 /* Style for title */
 h1 {
@@ -86,10 +85,3 @@ input[type="file"] {
   color: #fff;
   text-shadow: 1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000;
 }
-
-#nextClass,
-#score {
-  font-size: 36px; /* Adjust this value to increase or decrease the font size */
-}
-
-
