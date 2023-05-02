@@ -86,11 +86,9 @@ input[type="file"] {
   text-shadow: 1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000;
 }
 
-#saliencyMap,
-#saliencyMapOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
+#nextClass,
+#score {
+  font-size: 24px; /* Adjust this value to increase or decrease the font size */
 }
 
 
