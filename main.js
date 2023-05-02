@@ -1,3 +1,4 @@
+// Load the ImageNet class names from a text file
 async function loadClassNames() {
   const response = await fetch('imagenet_labels.txt');
   const text = await response.text();
@@ -5,11 +6,13 @@ async function loadClassNames() {
   return class_names;
 }
 
+// Load the pre-trained TensorFlow.js model from TensorFlow Hub
 async function loadModel() {
   const model = await tf.loadGraphModel('https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v1_100_224/classification/3/default/1', {fromTFHub: true});
   return model;
 }
 
+// Preprocess the input image to the format required by the model
 function preprocessImage(image) {
   const canvas = document.createElement('canvas');
   canvas.width = image.width;
@@ -23,6 +26,7 @@ function preprocessImage(image) {
   return batchedImage;
 }
 
+// Predict the class of the input image using the model
 async function predict(model, image) {
   const preprocessedImage = preprocessImage(image);
   const prediction = model.predict(preprocessedImage);
@@ -33,6 +37,7 @@ async function predict(model, image) {
   return { classIndices, topNIndices, topNProbabilities };
 }
 
+// Load an image from a file input
 async function loadImage(file) {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -46,6 +51,7 @@ async function loadImage(file) {
   });
 }
 
+// The main function of the application
 async function main() {
   const model = await loadModel();
   const class_names = await loadClassNames();
@@ -75,16 +81,22 @@ async function main() {
     for (let i = 1; i < topNIndices.length; i++) {
       predictionDisplay += `${i + 1}. ${class_names[topNIndices[i]]} (${(topNProbabilities[i] * 100).toFixed(2)}%)<br>`;
     }
+    // Update the prediction display with the top 5 predicted classes and their probabilities
     document.getElementById("prediction").innerHTML = predictionDisplay;
 
+    // Check if the prediction matches the current class, and update the score if it does
     if (classIndices[0] === currentClassIndex) {
       score++;
       updateScore();
     }
+
+    // Display a new class for the user to upload an image of
     displayNextClass();
   });
 
+  // Initialize the application by displaying the first class
   displayNextClass();
 }
 
+// Run the main function
 main();
