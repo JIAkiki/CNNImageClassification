@@ -1,4 +1,4 @@
-// Load the ImageNet class names from a text file
+// Load the ImageNet class names from a text file.
 async function loadClassNames() {
   const response = await fetch('imagenet_labels.txt');
   const text = await response.text();
