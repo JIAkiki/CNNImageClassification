@@ -1,7 +1,7 @@
 /* Import Daydream font */
 @font-face {
   font-family: "Daydream";
-  src: url("fonts/Daydream.otf");
+  src: url("fonts/Daydream.ttf");
 }
 
 /* Set font for entire page */
